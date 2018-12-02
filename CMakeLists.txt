@@ -5,6 +5,7 @@ set(BINARY_INSTALL_PATH "bin" CACHE PATH "Binary install path")
 set(LIBRARY_INSTALL_PATH "lib" CACHE PATH "Library install path")
 set(INCLUDE_INSTALL_PATH "include" CACHE PATH "Include install path")
 set(CONFIG_INSTALL_PATH "${LIBRARY_INSTALL_PATH}/${PROJECT_NAME}/cmake")
+set(PKG_CONFIG_INSTALL_PATH "${LIBRARY_INSTALL_PATH}/pkgconfig")
 
 set(DESPOT_BUILD_EXAMPLES ON CACHE BOOL "Build C++ model examples")
 set(DESPOT_BUILD_POMDPX ON CACHE BOOL "Build POMDPX example")
@@ -84,6 +85,10 @@ if(DESPOT_BUILD_POMDPX)
   add_subdirectory(examples/pomdpx_models)
 endif()
 
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/despot.pc.in
+		${CMAKE_CURRENT_BINARY_DIR}/despot.pc @ONLY)
+
+
 install(TARGETS "${PROJECT_NAME}"
   EXPORT "DespotTargets"
   ARCHIVE DESTINATION "${LIBRARY_INSTALL_PATH}"
@@ -93,6 +98,8 @@ install(TARGETS "${PROJECT_NAME}"
 install(DIRECTORY "include/${PROJECT_NAME}/"
   DESTINATION "${INCLUDE_INSTALL_PATH}/${PROJECT_NAME}"
 )
+
+install(FILES despot.pc DESTINATION "${PKG_CONFIG_INSTALL_PATH}")
 
 # Install a DespotConfig.cmake file so CMake can find_package(Despot).
 include(CMakePackageConfigHelpers)
