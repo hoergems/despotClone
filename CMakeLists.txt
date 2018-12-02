@@ -99,7 +99,7 @@ install(DIRECTORY "include/${PROJECT_NAME}/"
   DESTINATION "${INCLUDE_INSTALL_PATH}/${PROJECT_NAME}"
 )
 
-install(FILES despot.pc DESTINATION "${PKG_CONFIG_INSTALL_PATH}")
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/despot.pc DESTINATION "${PKG_CONFIG_INSTALL_PATH}")
 
 # Install a DespotConfig.cmake file so CMake can find_package(Despot).
 include(CMakePackageConfigHelpers)
