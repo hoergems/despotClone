@@ -113,8 +113,9 @@ ValuedAction POMCP::Search(double timeout) {
     cout << "========================" << endl;
 	cout << "Num histories: " << num_sims << endl;
 	cout << "========================" << endl;
-
+	
 	ValuedAction astar = OptimalAction(root_);
+
 
 	logi << "[POMCP::Search] Search statistics" << endl
 		<< "OptimalAction = " << astar << endl 
@@ -123,8 +124,22 @@ ValuedAction POMCP::Search(double timeout) {
 		<< "# active particles = " << model_->NumActiveParticles() << endl
 		<< "Tree size = " << root_->Size() << endl;
 
+    
 	if (astar.action == -1) {
+		cout << "hello1" << endl;		
+		std::vector<ACT_TYPE> actions;
 		for (ACT_TYPE action = 0; action < model_->NumActions(); action++) {
+			//cout << "action " << action << ": " << root_->Child(action)->count()
+			//	<< " " << root_->Child(action)->value() << endl;
+			actions.push_back(action);
+		}
+
+		std::sort(actions.begin(), actions.end(), [this](const ACT_TYPE &a1, const ACT_TYPE &a2){
+			return root_->Child(a1)->value() < root_->Child(a2)->value(); 
+		});
+
+		for (auto &action: actions) {
+			cout << "HI" << endl;
 			cout << "action " << action << ": " << root_->Child(action)->count()
 				<< " " << root_->Child(action)->value() << endl;
 		}
@@ -207,11 +222,21 @@ ACT_TYPE POMCP::UpperBoundAction(const VNode* vnode, double explore_constant) {
 ValuedAction POMCP::OptimalAction(const VNode* vnode) {
 	const vector<QNode*>& qnodes = vnode->children();
 	ValuedAction astar(-1, Globals::NEG_INFTY);
+	std::vector<ACT_TYPE> actions;
 	for (ACT_TYPE action = 0; action < qnodes.size(); action++) {
-		cout << action << " " << qnodes[action]->value() << " " << qnodes[action]->count() << " " << vnode->count() << endl;
+		actions.push_back(action);
+		//cout << action << " " << qnodes[action]->value() << " " << qnodes[action]->count() << " " << vnode->count() << endl;
 		if (qnodes[action]->value() > astar.value) {
 			astar = ValuedAction(action, qnodes[action]->value());
 		}
+	}
+
+	std::sort(actions.begin(), actions.end(), [&qnodes](const ACT_TYPE &a1, const ACT_TYPE &a2){
+		return qnodes[a1]->value() > qnodes[a2]->value();
+	});
+
+	for (auto &action: actions) {
+		cout << action << " " << qnodes[action]->value() << " " << qnodes[action]->count() << " " << vnode->count() << endl;
 	}
 	// assert(atar.action != -1);
 	return astar;
